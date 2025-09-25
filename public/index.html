@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VS Code Debug Example</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .button {
+            background: #007acc;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        .button:hover {
+            background: #005a9e;
+        }
+        .output {
+            background: #f8f8f8;
+            padding: 10px;
+            border-radius: 4px;
+            margin: 10px 0;
+            min-height: 50px;
+            border-left: 4px solid #007acc;
+        }
+        input {
+            padding: 8px;
+            margin: 5px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>VS Code Debug Example</h1>
+        <p>This page demonstrates client-side debugging with VS Code.</p>
+        
+        <h2>API Testing</h2>
+        <button class="button" onclick="testHelloAPI()">Test Hello API</button>
+        <button class="button" onclick="testDebugAPI()">Test Debug API</button>
+        <button class="button" onclick="testPostData()">Test POST Data</button>
+        
+        <h2>Interactive Debugging</h2>
+        <input type="number" id="numberInput" placeholder="Enter a number" value="5">
+        <button class="button" onclick="calculateFactorial()">Calculate Factorial</button>
+        <button class="button" onclick="generateArray()">Generate Array</button>
+        
+        <div id="output" class="output">Output will appear here...</div>
+    </div>
+
+    <script>
+        // Global variable for debugging
+        let debugData = {
+            requestCount: 0,
+            lastResult: null
+        };
+
+        function log(message) {
+            const output = document.getElementById('output');
+            output.innerHTML += `<div>${new Date().toLocaleTimeString()}: ${message}</div>`;
+            console.log(message);
+        }
+
+        async function testHelloAPI() {
+            debugData.requestCount++;
+            log('Testing Hello API...');
+            
+            try {
+                const response = await fetch('/api/hello');
+                const data = await response.json();
+                
+                // Add breakpoint here to examine response
+                debugData.lastResult = data;
+                log(`Success: ${data.message}`);
+            } catch (error) {
+                log(`Error: ${error.message}`);
+                console.error('API Error:', error);
+            }
+        }
+
+        async function testDebugAPI() {
+            debugData.requestCount++;
+            const id = Math.floor(Math.random() * 100) + 1;
+            log(`Testing Debug API with ID: ${id}`);
+            
+            try {
+                const response = await fetch(`/api/debug/${id}`);
+                const data = await response.json();
+                
+                // Add breakpoint here to examine debug data
+                debugData.lastResult = data;
+                log(`Debug info: ID=${data.id}, Message="${data.message}"`);
+            } catch (error) {
+                log(`Error: ${error.message}`);
+                console.error('Debug API Error:', error);
+            }
+        }
+
+        async function testPostData() {
+            debugData.requestCount++;
+            const postData = {
+                name: 'Test User',
+                action: 'debug_test',
+                timestamp: new Date().toISOString()
+            };
+            
+            log('Sending POST data...');
+            
+            try {
+                const response = await fetch('/api/data', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(postData)
+                });
+                
+                const result = await response.json();
+                
+                // Add breakpoint here to examine POST result
+                debugData.lastResult = result;
+                log(`POST result: ${JSON.stringify(result, null, 2)}`);
+            } catch (error) {
+                log(`Error: ${error.message}`);
+                console.error('POST Error:', error);
+            }
+        }
+
+        function calculateFactorial() {
+            const input = document.getElementById('numberInput');
+            const num = parseInt(input.value);
+            
+            if (isNaN(num) || num < 0) {
+                log('Please enter a valid positive number');
+                return;
+            }
+            
+            // Add breakpoint here to debug factorial calculation
+            let result = 1;
+            for (let i = 1; i <= num; i++) {
+                result *= i; // Step through this loop
+            }
+            
+            debugData.lastResult = result;
+            log(`Factorial of ${num} is ${result}`);
+        }
+
+        function generateArray() {
+            const input = document.getElementById('numberInput');
+            const size = parseInt(input.value) || 5;
+            
+            // Generate random array for debugging
+            let arr = [];
+            for (let i = 0; i < size; i++) {
+                arr.push(Math.floor(Math.random() * 100) + 1);
+            }
+            
+            // Add breakpoint here to examine array
+            const sum = arr.reduce((acc, val) => acc + val, 0);
+            const avg = sum / arr.length;
+            
+            debugData.lastResult = { array: arr, sum, average: avg };
+            log(`Generated array: [${arr.join(', ')}]`);
+            log(`Sum: ${sum}, Average: ${avg.toFixed(2)}`);
+        }
+
+        // Initialize page
+        document.addEventListener('DOMContentLoaded', function() {
+            log('Page loaded and ready for debugging!');
+            console.log('Debug data object available globally:', debugData);
+        });
+    </script>
+</body>
+</html>
