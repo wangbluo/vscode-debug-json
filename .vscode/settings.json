@@ -1,0 +1,10 @@
+{
+    // Additional VS Code settings for debugging
+    "debug.allowBreakpointsEverywhere": true,
+    "debug.inlineValues": "on",
+    "debug.openDebug": "openOnFirstSessionStart",
+    "debug.saveBeforeStart": "allEditorsInActiveGroup",
+    "debug.console.acceptSuggestionOnEnter": "on",
+    "debug.console.fontSize": 14,
+    "debug.console.lineHeight": 20
+}
